@@ -48,7 +48,7 @@ def collate_fn(data_list: list[dict]) -> dict:
     return {**tensors, **non_tensors}
 
 
-def process_image(image: dict, max_pixels: int = 2048 * 2048, min_pixels: int = 512 * 512):
+def process_image(image: dict, max_pixels: int = 256 * 256, min_pixels: int = 256 * 256):
     import math
     from io import BytesIO
     from PIL import Image
