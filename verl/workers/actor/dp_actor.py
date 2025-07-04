@@ -179,7 +179,7 @@ class DataParallelPPOActor(BasePPOActor):
             grad_norm = torch.nn.utils.clip_grad_norm_(self.actor_module.parameters(), max_norm=self.config.grad_clip)
         
         
-        grad_norm_threshold = self.config.grad_norm_threshold  
+        grad_norm_threshold = self.config.get("grad_norm_threshold", 100) # add default value
         
         # Only update if grad_norm is below threshold
         if not torch.isfinite(grad_norm) or (grad_norm_threshold is not None and grad_norm >= grad_norm_threshold):
