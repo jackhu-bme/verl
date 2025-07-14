@@ -65,7 +65,6 @@ def collate_fn(data_list: list[dict]) -> dict:
     return {**tensors, **non_tensors}
 
 
-<<<<<<< HEAD
 def process_image(image: dict, max_pixels: int = 256 * 256, min_pixels: int = 256 * 256):
     import math
     from io import BytesIO
@@ -90,8 +89,6 @@ def process_image(image: dict, max_pixels: int = 256 * 256, min_pixels: int = 25
     return image
 
 
-=======
->>>>>>> upstream/main
 class RLHFDataset(Dataset):
     """
     Load and preprocess RLHF data from Parquet files.

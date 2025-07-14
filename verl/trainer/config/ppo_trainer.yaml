@@ -100,12 +100,10 @@ actor_rollout_ref:
   rollout:
 
     # may get higher throughput when set to True. When activated, Please increase max_num_batched_tokens or decrease max_model_len.
-    enable_chunked_prefill: True
 
     # Which loader to use for rollout model weights: dummy_dtensor, hf, megatron, etc.
     # safetensors (for huge model, and set use_shm=True); dummy_dtensor: randomly init model weight
     load_format: dummy_dtensor
-<<<<<<< HEAD
     tensor_model_parallel_size: 2
     max_num_batched_tokens: 8192
     max_model_len: null
@@ -121,8 +119,6 @@ actor_rollout_ref:
     # number of responses (i.e. num sample times)
     n: 1 # > 1 for grpo
     limit_mm_per_prompt: 5 # for image limits in vllm rollout (default to 1, now we increase it to 5)
-=======
->>>>>>> upstream/main
 
     # for huge model, layered summon can save memory (prevent OOM) but make it slower
     layered_summon: False

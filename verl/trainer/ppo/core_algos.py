@@ -190,7 +190,6 @@ def get_kl_controller(kl_ctrl):
         raise NotImplementedError
 
 
-<<<<<<< HEAD
 def compute_gae_advantage_return_with_loss_mask(token_level_rewards: torch.Tensor, values: torch.Tensor, 
                                  loss_mask: torch.Tensor, gamma: float, lam: float):
     """Modified GAE calculation that handle multi-turn with loss mask
@@ -429,12 +428,8 @@ def compute_turn_wise_gae_advantage_return(
     
     return advantages, returns
                     
-        
-        
 
-def compute_gae_advantage_return(token_level_rewards: torch.Tensor, values: torch.Tensor, eos_mask: torch.Tensor,
-                                 gamma: torch.Tensor, lam: torch.Tensor):
-=======
+
 @register_adv_est(AdvantageEstimator.GAE)  # or simply: @register_adv_est("gae")
 def compute_gae_advantage_return(
     token_level_rewards: torch.Tensor,
@@ -443,7 +438,8 @@ def compute_gae_advantage_return(
     gamma: torch.Tensor,
     lam: torch.Tensor,
 ):
->>>>>>> upstream/main
+# def compute_gae_advantage_return(token_level_rewards: torch.Tensor, values: torch.Tensor, eos_mask: torch.Tensor,
+#                                  gamma: torch.Tensor, lam: torch.Tensor):
     """Adapted from https://github.com/huggingface/trl/blob/main/trl/trainer/ppo_trainer.py
 
     Args:
@@ -472,12 +468,6 @@ def compute_gae_advantage_return(
         gen_len = token_level_rewards.shape[-1]
 
         for t in reversed(range(gen_len)):
-<<<<<<< HEAD
-            nextvalues = values[:, t + 1] if t < gen_len - 1 else 0.0 
-            delta = token_level_rewards[:, t] + gamma * nextvalues - values[:, t] # TD error
-            lastgaelam = delta + gamma * lam * lastgaelam # gae
-            advantages_reversed.append(lastgaelam) # store the gae
-=======
             delta = token_level_rewards[:, t] + gamma * nextvalues - values[:, t]
             lastgaelam_ = delta + gamma * lam * lastgaelam
 
@@ -486,7 +476,6 @@ def compute_gae_advantage_return(
             lastgaelam = lastgaelam_ * response_mask[:, t] + (1 - response_mask[:, t]) * lastgaelam
 
             advantages_reversed.append(lastgaelam)
->>>>>>> upstream/main
         advantages = torch.stack(advantages_reversed[::-1], dim=1)
 
         returns = advantages + values

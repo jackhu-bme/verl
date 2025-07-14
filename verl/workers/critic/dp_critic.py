@@ -201,16 +201,12 @@ class DataParallelPPOCritic(BasePPOCritic):
         self.critic_module.train()
         metrics = {}
 
-<<<<<<< HEAD
         if self.config.use_reward_mask:
-            select_keys = ['input_ids', 'responses', 'attention_mask', 'position_ids', 'values', 'returns','end_of_response_position_mask']
+            select_keys = ['input_ids', 'responses', 'response_mask', 'attention_mask', 'position_ids', 'values', 'returns','end_of_response_position_mask']
         elif 'loss_mask' in data.batch.keys():
-            select_keys = ['input_ids', 'responses', 'attention_mask', 'position_ids', 'values', 'returns','loss_mask']
+            select_keys = ['input_ids', 'responses', 'response_mask', 'attention_mask', 'position_ids', 'values', 'returns','loss_mask']
         else:
-            select_keys = ['input_ids', 'responses', 'attention_mask', 'position_ids', 'values', 'returns']
-=======
-        select_keys = ["input_ids", "responses", "response_mask", "attention_mask", "position_ids", "values", "returns"]
->>>>>>> upstream/main
+            select_keys = ['input_ids', 'responses', 'response_mask', 'attention_mask', 'position_ids', 'values', 'returns']
         batch = data.select(batch_keys=select_keys).batch
         has_multi_modal_inputs = "multi_modal_inputs" in data.non_tensor_batch.keys()
 
@@ -230,13 +226,9 @@ class DataParallelPPOCritic(BasePPOCritic):
                 if has_multi_modal_inputs:
                     num_micro_batches = mini_batch.batch.batch_size[0] // self.config.ppo_micro_batch_size_per_gpu
                     micro_batches = data.select(select_keys, non_tensor_select_keys).chunk(num_micro_batches)
-<<<<<<< HEAD
-                    self.gradient_accumulation=num_micro_batches
-=======
                     self.gradient_accumulation = (
                         self.config.ppo_mini_batch_size // self.config.ppo_micro_batch_size_per_gpu
                     )
->>>>>>> upstream/main
                 elif self.config.use_dynamic_bsz:
                     max_token_len = self.config.ppo_max_token_len_per_gpu * self.ulysses_sequence_parallel_size
                     micro_batches, _ = rearrange_micro_batches(batch=mini_batch, max_token_len=max_token_len)
@@ -249,7 +241,8 @@ class DataParallelPPOCritic(BasePPOCritic):
                 self.critic_optimizer.zero_grad()
 
                 for data in micro_batches:
-<<<<<<< HEAD
+                    micro_batch_metrics = {}
+                    
                     #Support all devices
                     if isinstance(data, DataProto):
                         data = {**data.batch.to(torch.cuda.current_device()), **data.non_tensor_batch}
@@ -259,6 +252,7 @@ class DataParallelPPOCritic(BasePPOCritic):
                     responses = data['responses']
                     attention_mask = data['attention_mask']
                     position_ids = data['position_ids']
+                    response_mask = data["response_mask"]
                     values = data['values']
                     returns = data['returns']
                     response_length = responses.size(1)
@@ -274,18 +268,6 @@ class DataParallelPPOCritic(BasePPOCritic):
                         loss_mask=data["attention_mask"][:, -response_length - 1:-1]
 
                     eos_mask = loss_mask 
-=======
-                    micro_batch_metrics = {}
-
-                    # Support all devices
-                    if isinstance(data, DataProto):
-                        data = {**data.batch.to(get_device_id()), **data.non_tensor_batch}
-                    else:
-                        data = data.to(get_device_id())  # critic device is cpu when using offload
-                    response_mask = data["response_mask"]
-                    values = data["values"]
-                    returns = data["returns"]
->>>>>>> upstream/main
 
                     vpreds = self._forward_micro_batch(data)
 
